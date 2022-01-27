@@ -7,7 +7,9 @@ jobs:
   validate:
     runs-on: self-hosted
     name: validate
+    environment: staging
     steps:
+      - run: echo ${{ secrets.CONFIG_YAML }}
       - run: echo "test"
   provision:
     runs-on: self-hosted
@@ -29,14 +31,14 @@ jobs:
     needs: [validate, provision, deploy]
   notify_success:
     runs-on: self-hosted
-    name: notify
+    name: notify_success
     if: success()
     steps:
       - run: echo "test success"
     needs: [validate, provision, deploy, test]
   notify_failure:
     runs-on: self-hosted
-    name: notify
+    name: notify_failure
     if: failure()
     steps:
       - run: echo "test failure"
