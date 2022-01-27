@@ -29,3 +29,17 @@ jobs:
     name: notify
     steps:
       - run: echo "test"
+  notify_success:
+    runs-on: self-hosted
+    name: notify
+    if: success()
+    steps:
+      - run: echo "test success"
+    needs: [validate, provision, deploy, test]
+  notify_failure:
+    runs-on: self-hosted
+    name: notify
+    if: failure()
+    steps:
+      - run: echo "test failure"
+    needs: [validate, provision, deploy, test]
