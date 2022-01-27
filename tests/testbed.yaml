@@ -1,0 +1,28 @@
+# pyATS testbed file for post-deployment testing
+#
+# we leave the dynamic creation of this file from DNAC
+# inventory as an exercise to the reader
+
+devices:
+  POD3-EDGE3:
+    alias: POD3-EDGE3.POD3.CSS.COM
+    type: router
+    os: ios
+    custom:
+      abstraction:
+        order: [os]
+      categories:
+      - ios
+    credentials:
+      default:
+        username: css
+        password: "C!sc0123"
+      enable:
+        password: "C!sc0123"
+    connections:
+      defaults:
+        class: unicon.Unicon
+      vty:
+        protocol: ssh
+        ip: 10.122.21.175
+

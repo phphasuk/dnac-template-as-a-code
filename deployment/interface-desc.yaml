@@ -1,0 +1,8 @@
+template_name: interface-desc
+test_template: interface-desc.j2
+
+devices:
+  POD3-EDGE3.POD3.CSS.COM:
+    params:
+      id: 1/0/10
+      desc: TestTestTest
