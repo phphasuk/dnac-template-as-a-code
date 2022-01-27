@@ -9,7 +9,7 @@ jobs:
     name: validate
     environment: staging
     steps:
-      - run: echo ${{ secrets.CONFIG_YAML }}
+      - run: ls ${{ secrets.CONFIG_YAML }}
       - run: echo "test"
   provision:
     runs-on: self-hosted
