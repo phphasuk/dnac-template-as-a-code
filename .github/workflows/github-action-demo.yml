@@ -14,21 +14,19 @@ jobs:
     name: provision
     steps:
       - run: echo "test"
+    needs: [validate]
   deploy:
     runs-on: self-hosted
     name: deploy
     steps:
       - run: echo "test"
+    needs: [validate, provision]
   test:
     runs-on: self-hosted
     name: test
     steps:
       - run: echo "test"
-  notify:
-    runs-on: self-hosted
-    name: notify
-    steps:
-      - run: echo "test"
+    needs: [validate, provision, deploy]
   notify_success:
     runs-on: self-hosted
     name: notify
