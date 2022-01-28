@@ -6,7 +6,7 @@
 #
 dnac:
   base_url: https://10.122.20.139
-  version: 2.2.2.3
+  version: 2.2.3.3
   username: admin
   password: '%ENV{DNAC_PASSWORD}'
   verify: False

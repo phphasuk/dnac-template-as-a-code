@@ -15,21 +15,21 @@ jobs:
       - run: scripts/validate.py
   provision-prod:
     runs-on: self-hosted
-    name: provision
+    name: provision-prod
     environment: production
     steps:
       - run: scripts/provision_templates.py --config ${{ secrets.CONFIG_YAML }} --template_dir ${{ secrets.TEMPLATE_DIR }} --results results-1-provision.json ${{ env.DEBUG }}
     needs: validate
   deploy-prod:
     runs-on: self-hosted
-    name: deploy
+    name: deploy-prod
     steps:
       - run: scripts/vars.sh
       - run: echo "test"
     needs: [validate, provision-prod]
   test-prod:
     runs-on: self-hosted
-    name: test
+    name: test-prod
     steps:
       - run: scripts/vars.sh
       - run: echo "test"
