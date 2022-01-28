@@ -5,22 +5,6 @@ env:
   WEBEX_API_NOTIFICATION_TOKEN: ${{ secrets.WEBEX_API_NOTIFICATION_TOKEN }}
   DEBUG: "--debug"
 jobs:
-  set_env:
-    runs-on: self-hosted
-    name: set_env
-    steps:
-      - name: var
-        id: var
-        run: |
-          if [ "$GITHUB_REF_NAME }}" == "master" ]; then
-            echo "::set-output name=CONFIG_YAML::scripts/config.yaml"
-            echo "::set-output name=TEMPLATE_DIR::deployment/"
-            echo "::set-output name=TESTBED::testbed.yaml"
-          else
-            echo "::set-output name=CONFIG_YAML::scripts/config-preprod.yaml"
-            echo "::set-output name=TEMPLATE_DIR::deployment-preprod/"
-            echo "::set-output name=TESTBED::testbed-preprod.yaml"
-          fi
   validate:
     runs-on: self-hosted
     name: validate
@@ -29,14 +13,13 @@ jobs:
       - uses: actions/checkout@v2
       - run: pwd
       - run: scripts/validate.py
-  provision:
+  provision-prod:
     runs-on: self-hosted
     name: provision
+    environment: production
     steps:
-      - run: echo "${{ jobs.set_env.steps.var.outputs.CONFIG_YAML }}"
-      - run: echo "${{ jobs.set_env.steps.var.outputs.TEMPLATE_DIR }}"
-#      - run: scripts/provision_templates.py --config ${{ jobs.set_var.steps.CONFIG_YAML --template_dir $TEMPLATE_DIR --results results-1-provision.json ${{ env.DEBUG }}
-    needs: [set_env, validate]
+      - run: scripts/provision_templates.py --config ${{ secrets.CONFIG_YAML --template_dir ${{ secrets.TEMPLATE_DIR }} --results results-1-provision.json ${{ env.DEBUG }}
+    needs: validate
   deploy:
     runs-on: self-hosted
     name: deploy
