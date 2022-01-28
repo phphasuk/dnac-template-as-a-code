@@ -3,6 +3,7 @@ on: [push]
 env:
   DNAC_PASSWORD: ${{ secrets.DNAC_PASSWORD }}
   WEBEX_API_NOTIFICATION_TOKEN: ${{ secrets.WEBEX_API_NOTIFICATION_TOKEN }}
+  DEBUG: "--debug"
 jobs:
   validate:
     runs-on: self-hosted
@@ -17,12 +18,16 @@ jobs:
     name: provision
     steps:
       - if: ${{ github.ref }} == "refs/heads/main" )
-        run: |
-          echo "::set-env name=ENVIRONMENT::production"
+        env:
+          CONFIG_YAML: "scripts/config.yaml"
+          TEMPLATE_DIR: "deployment/"
+          TESTBED: "testbed.yaml"
       - if: ${{ github.ref }} != "refs/heads/main" )
-        run: |
-          echo "::set-env name=ENVIRONMENT::staging"
-      - run: scripts/provision_templates.py --config ${{ secrets.CONFIG_YAML }} --template_dir ${{ secrets.TEMPLATE_DIR }} --results results-1-provision.json ${{ secrets.DEBUG }}
+        env:
+          CONFIG_YAML: "scripts/config-preprod.yaml"
+          TEMPLATE_DIR: "deployment-preprod/"
+          TESTBED: "testbed-preprod.yaml"
+      - run: scripts/provision_templates.py --config ${{ CONFIG_YAML }} --template_dir ${{ TEMPLATE_DIR }} --results results-1-provision.json ${{ DEBUG }}
     needs: [validate]
   deploy:
     runs-on: self-hosted
