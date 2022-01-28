@@ -27,7 +27,7 @@ jobs:
           CONFIG_YAML: "scripts/config-preprod.yaml"
           TEMPLATE_DIR: "deployment-preprod/"
           TESTBED: "testbed-preprod.yaml"
-      - run: scripts/provision_templates.py --config ${{ CONFIG_YAML }} --template_dir ${{ TEMPLATE_DIR }} --results results-1-provision.json ${{ DEBUG }}
+      - run: scripts/provision_templates.py --config ${{ env.CONFIG_YAML }} --template_dir ${{ env.TEMPLATE_DIR }} --results results-1-provision.json ${{ env.DEBUG }}
     needs: [validate]
   deploy:
     runs-on: self-hosted
