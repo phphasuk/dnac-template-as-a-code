@@ -17,6 +17,7 @@ jobs:
     name: provision
     steps:
       - run: scripts/vars.sh
+      - run: printenv
       - run: echo ${{ env.CONFIG_YAML }}
 #      - run: scripts/provision_templates.py --config $CONFIG_YAML --template_dir $TEMPLATE_DIR --results results-1-provision.json $DEBUG
     needs: [validate]
