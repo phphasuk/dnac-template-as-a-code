@@ -9,8 +9,9 @@ jobs:
     name: validate
     environment: staging
     steps:
-      - run: ls ${{ secrets.CONFIG_YAML }}
       - run: echo "test"
+      - run: python --version
+      - run: pip list
   provision:
     runs-on: self-hosted
     name: provision
