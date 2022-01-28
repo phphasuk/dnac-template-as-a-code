@@ -15,7 +15,7 @@ jobs:
   provision-prod:
     runs-on: self-hosted
     name: provision-prod
-    if: ${{ GITHUB_REF_NAME }} == "main"
+    if: ${{ github.ref == 'refs/heads/main' }}
     environment: production
     steps:
       - run: scripts/provision_templates.py --config ${{ secrets.CONFIG_YAML }} --template_dir ${{ secrets.TEMPLATE_DIR }} --results results-1-provision.json ${{ env.DEBUG }}
