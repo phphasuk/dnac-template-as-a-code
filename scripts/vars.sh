@@ -6,7 +6,7 @@ TEMPLATE_DIR="dnac-templates/"
 DEBUG="--debug"
 # DEBUG="--debug"
 
-if [ "$CI_BUILD_REF_NAME" == "refs/heads/master" ] ; then 
+if [ "$github.ref" == "refs/heads/master" ] ; then 
     CONFIG_YAML="scripts/config.yaml"
     DEPLOY_DIR="deployment/"
     TESTBED="testbed.yaml"

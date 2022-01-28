@@ -3,7 +3,6 @@ on: [push]
 env:
   DNAC_PASSWORD: ${{ secrets.DNAC_PASSWORD }}
   WEBEX_API_NOTIFICATION_TOKEN: ${{ secrets.WEBEX_API_NOTIFICATION_TOKEN }}
-  CI_BUILD_REF_NAME: ${{ github.ref }}
 jobs:
   validate:
     runs-on: self-hosted
