@@ -21,7 +21,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: results-1-provision.json
-          path: scripts/results-1-provision.json
+          path: results-1-provision.json
     needs: validate
   deploy-prod:
     runs-on: self-hosted
