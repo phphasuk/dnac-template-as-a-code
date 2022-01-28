@@ -12,6 +12,8 @@ jobs:
     steps:
       - run: echo "Running on branch ${{ github.ref }}"
       - run: echo ${{ secrets.CONFIG_YAML }} 
+      - run: scripts/provision_templates.py --config ${{ secrets.CONFIG_YAML }} --template_dir ${{ secrets.TEMPLATE_DIR }} --results results-1-provision.json ${{ secrets.DEBUG }}
+
   validate:
     runs-on: self-hosted
     name: validate
