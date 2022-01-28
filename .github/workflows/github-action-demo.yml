@@ -32,12 +32,11 @@ jobs:
   provision:
     runs-on: self-hosted
     name: provision
-    needs: set_env
     steps:
       - run: echo "${{ jobs.set_env.steps.var.outputs.CONFIG_YAML }}"
       - run: echo "${{ jobs.set_env.steps.var.outputs.TEMPLATE_DIR }}"
 #      - run: scripts/provision_templates.py --config ${{ jobs.set_var.steps.CONFIG_YAML --template_dir $TEMPLATE_DIR --results results-1-provision.json ${{ env.DEBUG }}
-    needs: [validate]
+    needs: [set_env, validate]
   deploy:
     runs-on: self-hosted
     name: deploy
