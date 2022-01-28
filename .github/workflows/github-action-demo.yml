@@ -11,6 +11,7 @@ jobs:
       - run: echo "Running on branch ${{ github.ref }}"
       - if: ${{ github.ref }}" = "refs/heads/master"
         run: echo "::set-output name=env_name::production"
+      - run: echo ${{ secrets.CONFIG_YAML }} 
   validate:
     runs-on: self-hosted
     name: validate
