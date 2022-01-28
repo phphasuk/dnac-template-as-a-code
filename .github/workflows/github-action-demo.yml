@@ -1,8 +1,8 @@
 name: GitHub Actions Demo
 on: [push]
 env:
-  DNAC_PASSWORD: ${ secrets.DNAC_PASSWORD }
-  WEBEX_API_NOTIFICATION_TOKEN: ${ secrets.WEBEX_API_NOTIFICATION_TOKEN }
+  DNAC_PASSWORD: ${{ secrets.DNAC_PASSWORD }}
+  WEBEX_API_NOTIFICATION_TOKEN: ${{ secrets.WEBEX_API_NOTIFICATION_TOKEN }}
 jobs:
   validate:
     runs-on: self-hosted
@@ -17,18 +17,20 @@ jobs:
     name: provision
     steps:
       - run: scripts/vars.sh
-      - run: scripts/provision_templates.py --config ${ CONFIG_YAML } --template_dir ${ TEMPLATE_DIR } --results results-1-provision.json ${ DEBUG }
+      - run: scripts/provision_templates.py --config ${{ CONFIG_YAML }} --template_dir ${{ TEMPLATE_DIR }} --results results-1-provision.json ${{ DEBUG }}
     needs: [validate]
   deploy:
     runs-on: self-hosted
     name: deploy
     steps:
+      - run: scripts/vars.sh
       - run: echo "test"
     needs: [validate, provision]
   test:
     runs-on: self-hosted
     name: test
     steps:
+      - run: scripts/vars.sh
       - run: echo "test"
     needs: [validate, provision, deploy]
   notify_success:
@@ -36,6 +38,7 @@ jobs:
     name: notify_success
     if: success()
     steps:
+      - run: scripts/vars.sh
       - run: echo "test success"
     needs: [validate, provision, deploy, test]
   notify_failure:
@@ -43,5 +46,6 @@ jobs:
     name: notify_failure
     if: failure()
     steps:
+      - run: scripts/vars.sh
       - run: echo "test failure"
     needs: [validate, provision, deploy, test]
