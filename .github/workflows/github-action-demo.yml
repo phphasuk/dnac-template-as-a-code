@@ -53,6 +53,7 @@ jobs:
       - run: rm -rf tests/deploy || true
       - run: scripts/render_tests.py --config ${{ secrets.CONFIG_YAML }} --deploy_dir ${{ secrets.DEPLOY_DIR }} --out_dir tests/deploy/ ${{ env.DEBUG }}
       - run: cd tests/
+      - run: pwd
       - run: python -m robot --name 'DNAC Template Tests' --outputdir out/ --xunit output-junit.xml --variable testbed:testbed.yaml --extension robot .
       - run: cd ..
       - run: scripts/parse_testresults.py tests/out/output.xml results-3-tests.json
