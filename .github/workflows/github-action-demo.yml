@@ -4,16 +4,6 @@ env:
   DNAC_PASSWORD: ${{ secrets.DNAC_PASSWORD }}
   WEBEX_API_NOTIFICATION_TOKEN: ${{ secrets.WEBEX_API_NOTIFICATION_TOKEN }}
 jobs:
-  environment_set:
-    runs-on: self-hosted
-    name: environment_set
-    if: ${{ github.ref }}" = "refs/heads/master"
-    environment: production
-    steps:
-      - run: echo "Running on branch ${{ github.ref }}"
-      - run: echo ${{ secrets.CONFIG_YAML }} 
-      - run: scripts/provision_templates.py --config ${{ secrets.CONFIG_YAML }} --template_dir ${{ secrets.TEMPLATE_DIR }} --results results-1-provision.json ${{ secrets.DEBUG }}
-
   validate:
     runs-on: self-hosted
     name: validate
@@ -26,6 +16,12 @@ jobs:
     runs-on: self-hosted
     name: provision
     steps:
+      - if: ${{ github.ref }} == "refs/heads/main" )
+        run: |
+          echo "::set-env name=ENVIRONMENT::production"
+      - if: ${{ github.ref }} != "refs/heads/main" )
+        run: |
+          echo "::set-env name=ENVIRONMENT::staging"
       - run: scripts/provision_templates.py --config ${{ secrets.CONFIG_YAML }} --template_dir ${{ secrets.TEMPLATE_DIR }} --results results-1-provision.json ${{ secrets.DEBUG }}
     needs: [validate]
   deploy:
