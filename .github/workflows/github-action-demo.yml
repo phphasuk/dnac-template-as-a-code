@@ -32,34 +32,54 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: template-preview.txt
-          path: template-preveiw.txt
+          path: template-preview.txt
+    needs: [validate, provision-prod]
   deploy-prod:
     runs-on: self-hosted
     name: deploy-prod
     steps:
-      - run: scripts/vars.sh
-      - run: echo "test"
-    needs: [validate, provision-prod]
+      - run: scripts/deploy_templates.py --config ${{ secrets.CONFIG_YAML }} --deploy_dir ${{ secrets.DEPLOY_DIR }} --results results-2-deploy.json ${{ env.DEBUG }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: results-2-deploy.json
+          path: results-2-deploy.json
+    needs: [validate, provision-prod, preview-template-prod]
   test-prod:
     runs-on: self-hosted
     name: test-prod
     steps:
-      - run: scripts/vars.sh
-      - run: echo "test"
-    needs: [validate, provision-prod, deploy-prod]
+      - run: rm -rf tests/deploy || true
+      - run: scripts/render_tests.py --config ${{ secrets.CONFIG_YAML }} --deploy_dir ${{ secrets.DEPLOY_DIR }} --out_dir tests/deploy/ ${{ env.DEBUG }}
+      - run: cd tests/
+      - run: python -m robot --name 'DNAC Template Tests' --outputdir out/ --xunit output-junit.xml --variable testbed:${{ secrets.TESTBED }} --extension robot .
+      - run: cd ..
+      - run: scripts/parse_testresults.py tests/out/output.xml results-3-tests.json
+      - uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: |
+            tests/out/*
+            tests/deploy/*
+            results-3-tests.json
+      - uses: mikepenz/action-junit-report@v2
+        with:
+          report_paths: tests/out/output-junit.xml
+    needs: [validate, provision-prod, preview-template-prod, deploy-prod]
   notify_success:
     runs-on: self-hosted
     name: notify_success
     if: success()
     steps:
-      - run: scripts/vars.sh
-      - run: echo "test success"
-    needs: [validate, provision-prod, deploy-prod, test-prod]
+      - run: ATTACH="" ; for f in tests/out/log.html template-preview.txt  ; do test -f $f && ATTACH="$ATTACH --attach $f"; done; echo $ATTACH
+      - run: RESULTS="" ; for f in results*json ; do test -f $f && RESULTS="$RESULTS --results $f" ; done ; echo $RESULTS
+      - run: python scripts/notify.py --config ${{ secrets.CONFIG_YAML }} $ATTACH $RESULTS  "✅ Pipeline on branch \"$GITHUB_REF_NAME\" completed successfully ($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
+    needs: [validate, provision-prod, preview-template-prod, deploy-prod, test-prod]
   notify_failure:
     runs-on: self-hosted
     name: notify_failure
     if: failure()
     steps:
-      - run: scripts/vars.sh
-      - run: echo "test failure"
-    needs: [validate, provision-prod, deploy-prod, test-prod]
+      - run: ATTACH="" ; for f in tests/out/log.html template-preview.txt  ; do test -f $f && ATTACH="$ATTACH --attach $f"; done; echo $ATTACH
+      - run: RESULTS="" ; for f in results*json ; do test -f $f && RESULTS="$RESULTS --results $f" ; done ; echo $RESULTS
+      - run: python scripts/notify.py --config $CONFIG_YAML $ATTACH $RESULTS "❌ Pipeline on branch \"$GITHUB_REF_NAME\" failed ($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
+    needs: [validate, provision-prod, preview-template-prod, deploy-prod, test-prod]
