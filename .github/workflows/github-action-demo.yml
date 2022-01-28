@@ -4,12 +4,17 @@ env:
   DNAC_PASSWORD: ${{ secrets.DNAC_PASSWORD }}
   WEBEX_API_NOTIFICATION_TOKEN: ${{ secrets.WEBEX_API_NOTIFICATION_TOKEN }}
   DEBUG: "--debug"
+  CONFIG_YAML: "xxxx"
+  TEMPLATE_DIR: "yyyy"
 jobs:
-  set_environment:
+  set_production_environment:
     runs-on: self-hosted
-    name: set_environment
+    name: set_production_environment
     if: ${{ GITHUB_REF_NAME }} == "master"
-    environment: production
+    steps:
+      - env:
+          CONFIG_YAML: ${{ secrets.CONFIG_YAML }}
+          TEMPLATE_DIR: ${{ secrets.TEMPLATE_DIR }}
   validate:
     runs-on: self-hosted
     name: validate
@@ -22,8 +27,8 @@ jobs:
     runs-on: self-hosted
     name: provision
     steps:
-      - run: cat ${{ secrets.CONFIG_YAML }}
-      - run: echo ${{ setcrets.TEMPLATE_DIR }}
+      - run: cat ${{ env.CONFIG_YAML }}
+      - run: echo ${{ env.TEMPLATE_DIR }}
 #      - run: scripts/provision_templates.py --config $CONFIG_YAML --template_dir $TEMPLATE_DIR --results results-1-provision.json ${{ env.DEBUG }}
     needs: [validate]
   deploy:
