@@ -32,6 +32,7 @@ jobs:
   provision:
     runs-on: self-hosted
     name: provision
+    needs: set_env
     steps:
       - run: echo "${{ jobs.set_env.steps.var.outputs.CONFIG_YAML }}"
       - run: echo "${{ jobs.set_env.steps.var.outputs.TEMPLATE_DIR }}"
