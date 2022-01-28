@@ -23,7 +23,7 @@ jobs:
             echo "TEMPLATE_DIR=deployment/" >> "$GITHUB_ENV"
             echo "TESTBED=testbed.yaml" >> "$GITHUB_ENV"
           fi
-      - run: printenv
+      - run: cat ${{ env.GITHUB_ENV }}
       - run: echo ${{ env.CONFIG_YAML }}
 #      - run: scripts/provision_templates.py --config $CONFIG_YAML --template_dir $TEMPLATE_DIR --results results-1-provision.json ${{ env.DEBUG }}
     needs: [validate]
