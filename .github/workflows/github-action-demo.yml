@@ -9,6 +9,7 @@ jobs:
     name: validate
     environment: staging
     steps:
+      - run: pwd
       - run: ./scripts/validate.py
   provision:
     runs-on: self-hosted
