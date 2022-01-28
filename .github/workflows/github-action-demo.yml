@@ -108,7 +108,7 @@ jobs:
         with:
           name: template-preview.txt
           path: template-preview.txt
-    needs: [validate, provision-prod]
+    needs: [validate, provision-preprod]
   deploy-preprod:
     runs-on: self-hosted
     name: deploy-preprod
@@ -119,7 +119,7 @@ jobs:
         with:
           name: results-2-deploy.json
           path: results-2-deploy.json
-    needs: [validate, provision-prod, preview-template-prod]
+    needs: [validate, provision-preprod, preview-template-preprod]
   test-preprod:
     runs-on: self-hosted
     name: test-preprod
@@ -139,7 +139,7 @@ jobs:
       - uses: mikepenz/action-junit-report@v2
         with:
           report_paths: tests/out/output-junit.xml
-    needs: [validate, provision-prod, preview-template-prod, deploy-prod]
+    needs: [validate, provision-preprod, preview-template-preprod, deploy-preprod]
   notify-success-preprod:
     runs-on: self-hosted
     name: notify-success-preprod
@@ -149,7 +149,7 @@ jobs:
       - run: ATTACH="" ; for f in tests/out/log.html template-preview.txt  ; do test -f $f && ATTACH="$ATTACH --attach $f"; done; echo $ATTACH
       - run: RESULTS="" ; for f in results*json ; do test -f $f && RESULTS="$RESULTS --results $f" ; done ; echo $RESULTS
       - run: python scripts/notify.py --config ${{ secrets.CONFIG_YAML }} $ATTACH $RESULTS  "✅ Pipeline on branch \"$GITHUB_REF_NAME\" completed successfully ($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
-    needs: [validate, provision-prod, preview-template-prod, deploy-prod, test-prod]
+    needs: [validate, provision-preprod, preview-template-preprod, deploy-prod, test-preprod]
   notify-failure-preprod:
     runs-on: self-hosted
     name: notify-failure-preprod
@@ -159,4 +159,4 @@ jobs:
       - run: ATTACH="" ; for f in tests/out/log.html template-preview.txt  ; do test -f $f && ATTACH="$ATTACH --attach $f"; done; echo $ATTACH
       - run: RESULTS="" ; for f in results*json ; do test -f $f && RESULTS="$RESULTS --results $f" ; done ; echo $RESULTS
       - run: python scripts/notify.py --config ${{ secrets.CONFIG_YAML }} $ATTACH $RESULTS "❌ Pipeline on branch \"$GITHUB_REF_NAME\" failed ($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
-    needs: [validate, provision-prod, preview-template-prod, deploy-prod, test-prod]
+    needs: [validate, provision-preprod, preview-template-preprod, deploy-preprod, test-preprod]
