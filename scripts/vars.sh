@@ -6,7 +6,7 @@ TEMPLATE_DIR="dnac-templates/"
 DEBUG="--debug"
 # DEBUG="--debug"
 
-if [ $GITHUB_REF_NAME == "main" ] ; then 
+if [ "$GITHUB_REF_NAME" == "main" ] ; then 
     CONFIG_YAML="scripts/config.yaml"
     DEPLOY_DIR="deployment/"
     TESTBED="testbed.yaml"
