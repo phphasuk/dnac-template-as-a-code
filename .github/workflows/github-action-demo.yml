@@ -7,14 +7,22 @@ env:
   CONFIG_YAML: "xxxx"
   TEMPLATE_DIR: "yyyy"
 jobs:
-  set_production_environment:
+  set_env:
     runs-on: self-hosted
-    name: set_production_environment
-    if: ${{ GITHUB_REF_NAME }} == "master"
+    name: set_env
     steps:
-      - env:
-          CONFIG_YAML: ${{ secrets.CONFIG_YAML }}
-          TEMPLATE_DIR: ${{ secrets.TEMPLATE_DIR }}
+      - name: var
+        id: var
+        run: |
+          if [ "$GITHUB_REF_NAME }}" == "master" ]; then
+            echo "::set-output name=CONFIG_YAML::scripts/config.yaml"
+            echo "::set-output name=TEMPLATE_DIR::deployment/"
+            echo "::set-output name=TESTBED::testbed.yaml"
+          else
+            echo "::set-output name=CONFIG_YAML::scripts/config-preprod.yaml"
+            echo "::set-output name=TEMPLATE_DIR::deployment-preprod/"
+            echo "::set-output name=TESTBED::testbed-preprod.yaml"
+          fi
   validate:
     runs-on: self-hosted
     name: validate
@@ -27,9 +35,9 @@ jobs:
     runs-on: self-hosted
     name: provision
     steps:
-      - run: cat ${{ env.CONFIG_YAML }}
-      - run: echo ${{ env.TEMPLATE_DIR }}
-#      - run: scripts/provision_templates.py --config $CONFIG_YAML --template_dir $TEMPLATE_DIR --results results-1-provision.json ${{ env.DEBUG }}
+      - run: cat ${{ jobs.set_env.steps.var.CONFIG_YAML }}
+      - run: echo ${{ jobs.set_env.steps.var.TEMPLATE_DIR }}
+#      - run: scripts/provision_templates.py --config ${{ jobs.set_var.steps.CONFIG_YAML --template_dir $TEMPLATE_DIR --results results-1-provision.json ${{ env.DEBUG }}
     needs: [validate]
   deploy:
     runs-on: self-hosted
