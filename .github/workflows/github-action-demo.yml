@@ -5,6 +5,11 @@ env:
   WEBEX_API_NOTIFICATION_TOKEN: ${{ secrets.WEBEX_API_NOTIFICATION_TOKEN }}
   DEBUG: "--debug"
 jobs:
+  set_environment:
+    runs-on: self-hosted
+    name: set_environment
+    if: ${{ GITHUB_REF_NAME }} == "master"
+    environment: production
   validate:
     runs-on: self-hosted
     name: validate
@@ -17,14 +22,8 @@ jobs:
     runs-on: self-hosted
     name: provision
     steps:
-      - run: |
-          if [[ "$GITHUB_REF_NAME" == "master" ]]; then
-            echo "CONFIG_YAML=scripts/config.yaml" >> "$GITHUB_ENV"
-            echo "TEMPLATE_DIR=deployment/" >> "$GITHUB_ENV"
-            echo "TESTBED=testbed.yaml" >> "$GITHUB_ENV"
-          fi
-      - run: cat ${{ env.GITHUB_ENV }}
-      - run: echo ${{ env.CONFIG_YAML }}
+      - run: cat ${{ secrets.CONFIG_YAML }}
+      - run: echo ${{ setcrets.TEMPLATE_DIR }}
 #      - run: scripts/provision_templates.py --config $CONFIG_YAML --template_dir $TEMPLATE_DIR --results results-1-provision.json ${{ env.DEBUG }}
     needs: [validate]
   deploy:
