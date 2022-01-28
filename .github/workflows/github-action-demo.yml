@@ -86,3 +86,77 @@ jobs:
       - run: RESULTS="" ; for f in results*json ; do test -f $f && RESULTS="$RESULTS --results $f" ; done ; echo $RESULTS
       - run: python scripts/notify.py --config ${{ secrets.CONFIG_YAML }} $ATTACH $RESULTS "❌ Pipeline on branch \"$GITHUB_REF_NAME\" failed ($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
     needs: [validate, provision-prod, preview-template-prod, deploy-prod, test-prod]
+  provision-preprod:
+    runs-on: self-hosted
+    name: provision-preprod
+    if: ${{ github.ref == 'refs/heads/main' }}
+    environment: staging
+    steps:
+      - run: scripts/provision_templates.py --config ${{ secrets.CONFIG_YAML }} --template_dir ${{ secrets.TEMPLATE_DIR }} --results results-1-provision.json ${{ env.DEBUG }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: results-1-provision.json
+          path: results-1-provision.json
+    needs: validate
+  preview-template-preprod:
+    runs-on: self-hosted
+    name: preview-template-preprod
+    environment: staging
+    steps:
+      - run: scripts/preview_templates.py --config ${{ secrets.CONFIG_YAML }} --outfile template-preview.txt --deploy_dir ${{ secrets.DEPLOY_DIR }} ${{ env.DEBUG }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: template-preview.txt
+          path: template-preview.txt
+    needs: [validate, provision-prod]
+  deploy-preprod:
+    runs-on: self-hosted
+    name: deploy-preprod
+    environment: staging
+    steps:
+      - run: scripts/deploy_templates.py --config ${{ secrets.CONFIG_YAML }} --deploy_dir ${{ secrets.DEPLOY_DIR }} --results results-2-deploy.json ${{ env.DEBUG }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: results-2-deploy.json
+          path: results-2-deploy.json
+    needs: [validate, provision-prod, preview-template-prod]
+  test-preprod:
+    runs-on: self-hosted
+    name: test-preprod
+    environment: staging
+    steps:
+      - run: rm -rf tests/deploy || true
+      - run: scripts/render_tests.py --config ${{ secrets.CONFIG_YAML }} --deploy_dir ${{ secrets.DEPLOY_DIR }} --out_dir tests/deploy/ ${{ env.DEBUG }}
+      - run: python -m robot --name 'DNAC Template Tests' --outputdir tests/out/ --xunit output-junit.xml --variable testbed:tests/${{ secrets.TESTBED }} --extension robot .
+      - run: scripts/parse_testresults.py tests/out/output.xml results-3-tests.json
+      - uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: |
+            tests/out/*
+            tests/deploy/*
+            results-3-tests.json
+      - uses: mikepenz/action-junit-report@v2
+        with:
+          report_paths: tests/out/output-junit.xml
+    needs: [validate, provision-prod, preview-template-prod, deploy-prod]
+  notify-success-preprod:
+    runs-on: self-hosted
+    name: notify-success-preprod
+    if: success()
+    environment: staging
+    steps:
+      - run: ATTACH="" ; for f in tests/out/log.html template-preview.txt  ; do test -f $f && ATTACH="$ATTACH --attach $f"; done; echo $ATTACH
+      - run: RESULTS="" ; for f in results*json ; do test -f $f && RESULTS="$RESULTS --results $f" ; done ; echo $RESULTS
+      - run: python scripts/notify.py --config ${{ secrets.CONFIG_YAML }} $ATTACH $RESULTS  "✅ Pipeline on branch \"$GITHUB_REF_NAME\" completed successfully ($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
+    needs: [validate, provision-prod, preview-template-prod, deploy-prod, test-prod]
+  notify-failure-preprod:
+    runs-on: self-hosted
+    name: notify-failure-preprod
+    if: failure()
+    environment: staging
+    steps:
+      - run: ATTACH="" ; for f in tests/out/log.html template-preview.txt  ; do test -f $f && ATTACH="$ATTACH --attach $f"; done; echo $ATTACH
+      - run: RESULTS="" ; for f in results*json ; do test -f $f && RESULTS="$RESULTS --results $f" ; done ; echo $RESULTS
+      - run: python scripts/notify.py --config ${{ secrets.CONFIG_YAML }} $ATTACH $RESULTS "❌ Pipeline on branch \"$GITHUB_REF_NAME\" failed ($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
+    needs: [validate, provision-prod, preview-template-prod, deploy-prod, test-prod]
