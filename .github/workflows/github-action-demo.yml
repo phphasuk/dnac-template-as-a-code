@@ -4,6 +4,14 @@ env:
   DNAC_PASSWORD: ${{ secrets.DNAC_PASSWORD }}
   WEBEX_API_NOTIFICATION_TOKEN: ${{ secrets.WEBEX_API_NOTIFICATION_TOKEN }}
 jobs:
+  environment_set:
+    runs-on: self-hosted
+    name: environment_set
+    steps:
+      - run: |
+          echo "Running on branch ${{ github.ref }}"
+          if [ "${{ github.ref }}" = "refs/heads/master" ]; then
+            echo "::set-output name=env_name::production"
   validate:
     runs-on: self-hosted
     name: validate
