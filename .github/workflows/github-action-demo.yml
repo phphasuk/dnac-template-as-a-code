@@ -3,6 +3,7 @@ on: [push]
 env:
   DNAC_PASSWORD: ${{ secrets.DNAC_PASSWORD }}
   WEBEX_API_NOTIFICATION_TOKEN: ${{ secrets.WEBEX_API_NOTIFICATION_TOKEN }}
+  DEBUG: "--debug"
 jobs:
   validate:
     runs-on: self-hosted
@@ -16,10 +17,15 @@ jobs:
     runs-on: self-hosted
     name: provision
     steps:
-      - run: scripts/vars.sh
+      - run: |
+          if [[ "$GITHUB_REF_NAME" == "master" ]]; then
+            echo "CONFIG_YAML=scripts/config.yaml" >> "$GITHUB_ENV"
+            echo "TEMPLATE_DIR=deployment/" >> "$GITHUB_ENV"
+            echo "TESTBED=testbed.yaml" >> "$GITHUB_ENV"
+          fi
       - run: printenv
       - run: echo ${{ env.CONFIG_YAML }}
-#      - run: scripts/provision_templates.py --config $CONFIG_YAML --template_dir $TEMPLATE_DIR --results results-1-provision.json $DEBUG
+#      - run: scripts/provision_templates.py --config $CONFIG_YAML --template_dir $TEMPLATE_DIR --results results-1-provision.json ${{ env.DEBUG }}
     needs: [validate]
   deploy:
     runs-on: self-hosted
