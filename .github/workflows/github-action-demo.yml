@@ -69,7 +69,7 @@ jobs:
     needs: [validate, provision-prod, preview-template-prod, deploy-prod]
   notify-success-prod:
     runs-on: self-hosted
-    name: notify-success
+    name: notify-success-prod
     if: success()
     environment: production
     steps:
@@ -79,7 +79,7 @@ jobs:
     needs: [validate, provision-prod, preview-template-prod, deploy-prod, test-prod]
   notify-failure-prod:
     runs-on: self-hosted
-    name: notify-failure
+    name: notify-failure-prod
     if: failure()
     environment: production
     steps:
