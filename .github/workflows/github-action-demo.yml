@@ -3,7 +3,6 @@ on: [push]
 env:
   DNAC_PASSWORD: ${{ secrets.DNAC_PASSWORD }}
   WEBEX_API_NOTIFICATION_TOKEN: ${{ secrets.WEBEX_API_NOTIFICATION_TOKEN }}
-  DEBUG: "--debug"
   CI_BUILD_REF_NAME: ${{ github.ref }}
 jobs:
   validate:
@@ -19,7 +18,7 @@ jobs:
     name: provision
     steps:
       - run: scripts/vars.sh
-      - run: scripts/provision_templates.py --config ${{ env.CONFIG_YAML }} --template_dir ${{ env.TEMPLATE_DIR }} --results results-1-provision.json ${{ env.DEBUG }}
+      - run: scripts/provision_templates.py --config $CONFIG_YAML --template_dir TEMPLATE_DIR --results results-1-provision.json $DEBUG
     needs: [validate]
   deploy:
     runs-on: self-hosted
