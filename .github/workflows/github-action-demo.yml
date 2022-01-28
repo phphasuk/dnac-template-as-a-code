@@ -17,9 +17,8 @@ jobs:
     runs-on: self-hosted
     name: provision
     steps:
-      - run: |
-          if [ ${{ github.ref }} == "refs/heads/master" ];
-            echo "::set-output name=env_name::production"
+      - if: ${{ github.ref }} == "refs/heads/master"
+          echo "::set-output name=env_name::production"
       - run: scripts/provision_templates.py --config ${{ env.CONFIG_YAML }} --template_dir ${{ env.TEMPLATE_DIR }} --results results-1-provision.json ${{ env.DEBUG }}
     needs: [validate]
   deploy:
