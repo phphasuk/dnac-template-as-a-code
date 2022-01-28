@@ -9,9 +9,7 @@ jobs:
     name: validate
     environment: staging
     steps:
-      - run: echo "test"
-      - run: python --version
-      - run: pip list
+      - run: ./scripts/validate.py
   provision:
     runs-on: self-hosted
     name: provision
