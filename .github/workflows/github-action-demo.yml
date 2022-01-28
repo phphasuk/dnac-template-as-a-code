@@ -18,22 +18,22 @@ jobs:
     name: provision
     environment: production
     steps:
-      - run: scripts/provision_templates.py --config ${{ secrets.CONFIG_YAML --template_dir ${{ secrets.TEMPLATE_DIR }} --results results-1-provision.json ${{ env.DEBUG }}
+      - run: scripts/provision_templates.py --config ${{ secrets.CONFIG_YAML }} --template_dir ${{ secrets.TEMPLATE_DIR }} --results results-1-provision.json ${{ env.DEBUG }}
     needs: validate
-  deploy:
+  deploy-prod:
     runs-on: self-hosted
     name: deploy
     steps:
       - run: scripts/vars.sh
       - run: echo "test"
-    needs: [validate, provision]
-  test:
+    needs: [validate, provision-prod]
+  test-prod:
     runs-on: self-hosted
     name: test
     steps:
       - run: scripts/vars.sh
       - run: echo "test"
-    needs: [validate, provision, deploy]
+    needs: [validate, provision-prod, deploy-prod]
   notify_success:
     runs-on: self-hosted
     name: notify_success
@@ -41,7 +41,7 @@ jobs:
     steps:
       - run: scripts/vars.sh
       - run: echo "test success"
-    needs: [validate, provision, deploy, test]
+    needs: [validate, provision-prod, deploy-prod, test-prod]
   notify_failure:
     runs-on: self-hosted
     name: notify_failure
@@ -49,4 +49,4 @@ jobs:
     steps:
       - run: scripts/vars.sh
       - run: echo "test failure"
-    needs: [validate, provision, deploy, test]
+    needs: [validate, provision-prod, deploy-prod, test-prod]
