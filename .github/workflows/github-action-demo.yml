@@ -9,8 +9,8 @@ jobs:
     name: environment_set
     steps:
       - run: echo "Running on branch ${{ github.ref }}"
-      - run: if [ "${{ github.ref }}" = "refs/heads/master" ]; then
-                echo "::set-output name=env_name::production"
+      - if: ${{ github.ref }}" = "refs/heads/master"
+        run: echo "::set-output name=env_name::production"
   validate:
     runs-on: self-hosted
     name: validate
