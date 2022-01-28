@@ -4,8 +4,6 @@ env:
   DNAC_PASSWORD: ${{ secrets.DNAC_PASSWORD }}
   WEBEX_API_NOTIFICATION_TOKEN: ${{ secrets.WEBEX_API_NOTIFICATION_TOKEN }}
   DEBUG: "--debug"
-  CONFIG_YAML: "xxxx"
-  TEMPLATE_DIR: "yyyy"
 jobs:
   set_env:
     runs-on: self-hosted
@@ -35,8 +33,8 @@ jobs:
     runs-on: self-hosted
     name: provision
     steps:
-      - run: cat ${{ jobs.set_env.steps.var.CONFIG_YAML }}
-      - run: echo ${{ jobs.set_env.steps.var.TEMPLATE_DIR }}
+      - run: cat ${{ set_env.steps.var.CONFIG_YAML }}
+      - run: echo ${{ set_env.steps.var.TEMPLATE_DIR }}
 #      - run: scripts/provision_templates.py --config ${{ jobs.set_var.steps.CONFIG_YAML --template_dir $TEMPLATE_DIR --results results-1-provision.json ${{ env.DEBUG }}
     needs: [validate]
   deploy:
