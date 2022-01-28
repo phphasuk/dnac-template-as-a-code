@@ -16,7 +16,7 @@ jobs:
     runs-on: self-hosted
     name: provision
     steps:
-      - run: echo "test"
+      - run: scripts/provision_templates.py --config ${{ secrets.CONFIG_YAML }} --template_dir ${{ secrets.TEMPLATE_DIR }} --results results-1-provision.json ${{ secrets.DEBUG }}
     needs: [validate]
   deploy:
     runs-on: self-hosted
