@@ -11,7 +11,6 @@ jobs:
     environment: staging
     steps:
       - uses: actions/checkout@v2
-      - run: pwd
       - run: scripts/validate.py
   provision-prod:
     runs-on: self-hosted
