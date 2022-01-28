@@ -4,6 +4,7 @@ env:
   DNAC_PASSWORD: ${{ secrets.DNAC_PASSWORD }}
   WEBEX_API_NOTIFICATION_TOKEN: ${{ secrets.WEBEX_API_NOTIFICATION_TOKEN }}
   DEBUG: "--debug"
+  CI_BUILD_REF_NAME: ${{ github.ref }}
 jobs:
   validate:
     runs-on: self-hosted
@@ -17,8 +18,7 @@ jobs:
     runs-on: self-hosted
     name: provision
     steps:
-      - if: ${{ github.ref }} == "refs/heads/master"
-          echo "::set-output name=env_name::production"
+      - run: scripts/var.sh
       - run: scripts/provision_templates.py --config ${{ env.CONFIG_YAML }} --template_dir ${{ env.TEMPLATE_DIR }} --results results-1-provision.json ${{ env.DEBUG }}
     needs: [validate]
   deploy:
