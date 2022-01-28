@@ -89,7 +89,7 @@ jobs:
   provision-preprod:
     runs-on: self-hosted
     name: provision-preprod
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref != 'refs/heads/main' }}
     environment: staging
     steps:
       - run: scripts/provision_templates.py --config ${{ secrets.CONFIG_YAML }} --template_dir ${{ secrets.TEMPLATE_DIR }} --results results-1-provision.json ${{ env.DEBUG }}
