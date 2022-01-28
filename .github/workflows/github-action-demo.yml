@@ -18,6 +18,10 @@ jobs:
     environment: production
     steps:
       - run: scripts/provision_templates.py --config ${{ secrets.CONFIG_YAML }} --template_dir ${{ secrets.TEMPLATE_DIR }} --results results-1-provision.json ${{ env.DEBUG }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: results-1-provision.json
+          path: scripts/results-1-provision.json
     needs: validate
   deploy-prod:
     runs-on: self-hosted
